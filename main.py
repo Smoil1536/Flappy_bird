@@ -5,7 +5,7 @@ def set_game_icon():
     pg.display.set_icon(game_icon)
     
 pg.init()
-window = pg.display.set_mode((600, 600))
+window = pg.display.set_mode((600, 600)) #another comment
 set_game_icon()
 
 running = True #this is a comment
