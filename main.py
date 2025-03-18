@@ -8,7 +8,7 @@ pg.init()
 window = pg.display.set_mode((600, 600))
 set_game_icon()
 
-running = True
+running = True #this is a comment
 while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
