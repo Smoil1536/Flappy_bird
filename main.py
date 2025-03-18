@@ -1,16 +1,29 @@
 import pygame as pg
 
-def set_game_icon():
-    game_icon = pg.image.load("assets/favicon.ico")
-    pg.display.set_icon(game_icon)
+def load_images():
+    global game_icon, bg_image
     
-pg.init()
-window = pg.display.set_mode((600, 600)) #another comment
-set_game_icon()
+    game_icon = pg.image.load("assets/favicon.ico")
+    bg_image = pg.image.load("assets/sprites/background-day.png")
+    
 
-running = True #this is a comment
+# Initializing window and pygame
+pg.init()
+load_images()
+window = pg.display.set_mode((288, 512))
+
+# Set icon and title
+pg.display.set_icon(game_icon)
+pg.display.set_caption("Flappy Bird")
+
+running = True
+
 while running:
+    window.blit(bg_image, (0,0))
+    
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            print(event.type)
             running = False
+    
+    pg.display.update()
+    
