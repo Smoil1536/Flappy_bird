@@ -1,14 +1,19 @@
 import pygame as pg
 from src import bird
+from src import pipe
 
 def load_images():
-    global game_icon, bg_image, bird_image_up, bird_image_down, bird_image_mid
+    global game_icon, bg_image, bird_image_up, bird_image_down, bird_image_mid, pipe_image, pipe_image_flipped
     
     game_icon = pg.image.load("assets/favicon.ico")
     bg_image = pg.image.load("assets/sprites/background-day.png")
+    
     bird_image_down = pg.image.load("assets/sprites/blue-down-bird.png")
     bird_image_up = pg.image.load("assets/sprites/blue-up-bird.png")
     bird_image_mid = pg.image.load("assets/sprites/blue-mid-bird.png")
+    
+    pipe_image = pg.image.load("assets/sprites/pipe-green.png")
+    pipe_image_flipped = pg.transform.flip(pipe_image, False, True)
     
 
 # Initializing window and pygame
@@ -25,11 +30,21 @@ Flappy_bird = bird.Bird()
 Flappy_bird.x = (288/2) - 17 # 17 is half of width of bird
 Flappy_bird.y = (512/2) - 12 # 12 is half of height of bird
 
+# Init pipe
+Beam_flipped = pipe.Pipe()
+Beam_flipped.y = pipe.calc_coords()
+Beam = pipe.Pipe()
+Beam.y = (Beam_flipped.y+320) + (24*3)
+
 running = True
 
 while running:
     window.blit(bg_image, (0,0))
     window.blit(bird_image_mid, (Flappy_bird.x, Flappy_bird.y))
+    
+    print(f"pipe: x: {Beam.x}, y: {Beam.y}")
+    window.blit(pipe_image_flipped, (Beam_flipped.x, Beam_flipped.y))
+    window.blit(pipe_image, (Beam.x, Beam.y))
     
     for event in pg.event.get():
         if event.type == pg.QUIT:
