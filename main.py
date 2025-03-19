@@ -19,7 +19,15 @@ def load_images():
 # Initializing window and pygame
 pg.init()
 load_images()
-window = pg.display.set_mode((288, 512))
+
+width = bg_image.get_size()[0]
+height = bg_image.get_size()[1]
+
+pipe_height = pipe_image.get_size()[1]
+
+bird_width = bird_image_mid.get_size()[0]
+bird_height = bird_image_mid.get_size()[1]
+window = pg.display.set_mode(bg_image.get_size())
 
 # Set icon and title
 pg.display.set_icon(game_icon)
@@ -27,14 +35,23 @@ pg.display.set_caption("Flappy Bird")
 
 # Initializing bird
 Flappy_bird = bird.Bird()
-Flappy_bird.x = (288/2) - 17 # 17 is half of width of bird
-Flappy_bird.y = (512/2) - 12 # 12 is half of height of bird
+Flappy_bird.x = (width/2) - (bird_width/2) # 17 is half of width of bird
+Flappy_bird.y = (height/2) - (bird_height/2) # 12 is half of height of bird
 
 # Init pipe
 Beam_flipped = pipe.Pipe()
 Beam_flipped.y = pipe.calc_coords()
 Beam = pipe.Pipe()
-Beam.y = (Beam_flipped.y+320) + (24*3)
+Beam.y = (Beam_flipped.y+pipe_height) + (bird_height*3)
+
+# Init pipe 2
+Beam_flipped_2 = pipe.Pipe()
+Beam_flipped_2.x = Beam_flipped.x + (width/2)
+Beam_flipped_2.y = pipe.calc_coords()
+
+Beam_2 = pipe.Pipe()
+Beam_2.x = Beam.x + (width/2)
+Beam_2.y = (Beam_flipped_2.y+pipe_height) + (bird_height*3)
 
 running = True
 
@@ -42,10 +59,26 @@ while running:
     window.blit(bg_image, (0,0))
     window.blit(bird_image_mid, (Flappy_bird.x, Flappy_bird.y))
     
-    print(f"pipe: x: {Beam.x}, y: {Beam.y}")
     window.blit(pipe_image_flipped, (Beam_flipped.x, Beam_flipped.y))
     window.blit(pipe_image, (Beam.x, Beam.y))
     
+    window.blit(pipe_image_flipped, (Beam_flipped_2.x, Beam_flipped_2.y))
+    window.blit(pipe_image, (Beam_2.x, Beam_2.y))
+    
+    Beam_flipped.x -= 0.1
+    Beam.x -= 0.1
+    
+    Beam_flipped_2.x -= 0.1
+    Beam_2.x -= 0.1
+    
+    if Beam_flipped.x < 0:
+        Beam_flipped.reset()
+        Beam.reset()
+    elif Beam_flipped_2.x < 0:
+        Beam_flipped_2.reset()
+        Beam_2.reset()
+    
+    # 2 beams on screen at a time
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
