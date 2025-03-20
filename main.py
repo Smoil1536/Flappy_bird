@@ -16,7 +16,24 @@ def load_images():
     pipe_image = pg.image.load("assets/sprites/pipe-green.png")
     pipe_image_flipped = pg.transform.flip(pipe_image, False, True)
     
+def randomize_pipes():
+    upY = pipe.calc_coords()
+    downY = (upY+pipe_height) + (bird_height*4)
+    return upY, downY
 
+def reset_pipes(Beam_flipped, Beam):
+    Beam_flipped.reset(pipe_width, width)
+    Beam.reset(pipe_width, width)
+    Beam_flipped.y, Beam.y = randomize_pipes()
+    
+    return Beam_flipped, Beam
+
+def crash(*pipes):
+    for coord, mask in pipes:
+        if Flappy_bird_mask.overlap(mask, (coord.x-Flappy_bird.x, coord.y-Flappy_bird.y)):
+            return True    
+    return False
+    
 # Initializing window and pygame
 pg.init()
 load_images()
@@ -40,20 +57,25 @@ Flappy_bird = bird.Bird()
 Flappy_bird.x = (width/2) - (bird_width/2)
 Flappy_bird.y = (height/2) - (bird_height/2)
 
+# Bird mask
+Flappy_bird_mask = pg.mask.from_surface(bird_image_mid)
+
+# Beam mask
+Beam_flipped_mask = pg.mask.from_surface(pipe_image_flipped)
+Beam_mask = pg.mask.from_surface(pipe_image)
+
 # Init pipe
 Beam_flipped = pipe.Pipe()
-Beam_flipped.y = pipe.calc_coords()
 Beam = pipe.Pipe()
-Beam.y = (Beam_flipped.y+pipe_height) + (bird_height*4)
+Beam_flipped.y, Beam.y = randomize_pipes()
 
 # Init pipe 2
 Beam_flipped_2 = pipe.Pipe()
 Beam_flipped_2.x = (Beam_flipped.x) + (width/2) + (pipe_width/2)
-Beam_flipped_2.y = pipe.calc_coords()
-
 Beam_2 = pipe.Pipe()
 Beam_2.x = Beam_flipped_2.x
-Beam_2.y = (Beam_flipped_2.y+pipe_height) + (bird_height*4)
+
+Beam_flipped_2.y, Beam_2.y = randomize_pipes()
 
 running = True
 
@@ -77,13 +99,16 @@ while running:
     Beam_flipped_2.x -= 0.1
     Beam_2.x -= 0.1
     
+    # Collison
+    if crash((Beam_flipped, Beam_flipped_mask), (Beam_flipped_2, Beam_flipped_mask), (Beam, Beam_mask), (Beam_2, Beam_mask)):
+        
+        running = False
+    
     # Repeating the pipes by reseting it's position
     if Beam_flipped.x < (0 - pipe_width):
-        Beam_flipped.reset(pipe_width, width)
-        Beam.reset(pipe_width, width)
+        (Beam_flipped, Beam) = reset_pipes(Beam_flipped, Beam)
     elif Beam_flipped_2.x < (0 - pipe_width):
-        Beam_flipped_2.reset(pipe_width, width)
-        Beam_2.reset(pipe_width, width)
+        (Beam_flipped_2, Beam_2) = reset_pipes(Beam_flipped_2, Beam_2)
     
     # Event loop
     for event in pg.event.get():
@@ -92,4 +117,3 @@ while running:
     
     # Updating the display
     pg.display.update()
-    
