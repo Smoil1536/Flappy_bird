@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 from src import bird
 from src import pipe
 
@@ -32,7 +33,19 @@ def crash(*pipes):
     for coord, mask in pipes:
         if Flappy_bird_mask.overlap(mask, (coord.x-Flappy_bird.x, coord.y-Flappy_bird.y)):
             return True    
+    if Flappy_bird.y >= height:
+        return True
     return False
+
+def move_pipes():
+    Beam_flipped.x -= 0.1
+    Beam.x -= 0.1
+    Beam_flipped_2.x -= 0.1
+    Beam_2.x -= 0.1
+    
+def show_pipes(flipped, straight):
+    window.blit(pipe_image_flipped, (flipped.x, flipped.y))
+    window.blit(pipe_image, (straight.x, straight.y))
     
 # Initializing window and pygame
 pg.init()
@@ -83,25 +96,20 @@ while running:
     # Adding the Background Image
     window.blit(bg_image, (0,0))
     # The flappy bird
-    window.blit(bird_image_mid, (Flappy_bird.x, Flappy_bird.y))
+    window.blit(random.choice([bird_image_down, bird_image_mid, bird_image_up]), (Flappy_bird.x, Flappy_bird.y))
     
-    # First pair of pipes (flipped and straight)
-    window.blit(pipe_image_flipped, (Beam_flipped.x, Beam_flipped.y))
-    window.blit(pipe_image, (Beam.x, Beam.y))
-    
-    # Second pair of pipes
-    window.blit(pipe_image_flipped, (Beam_flipped_2.x, Beam_flipped_2.y))
-    window.blit(pipe_image, (Beam_2.x, Beam_2.y))
+    # Displaying the pipes
+    show_pipes(Beam_flipped, Beam)
+    show_pipes(Beam_flipped_2, Beam_2)
     
     # Moving the pipes
-    Beam_flipped.x -= 0.1
-    Beam.x -= 0.1
-    Beam_flipped_2.x -= 0.1
-    Beam_2.x -= 0.1
+    move_pipes()
+    
+    # Move flappy bird down
+    Flappy_bird.y += 0.3
     
     # Collison
     if crash((Beam_flipped, Beam_flipped_mask), (Beam_flipped_2, Beam_flipped_mask), (Beam, Beam_mask), (Beam_2, Beam_mask)):
-        
         running = False
     
     # Repeating the pipes by reseting it's position
@@ -114,6 +122,10 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            print("yes clicked")
+            print(Flappy_bird.y)
+            Flappy_bird.y -= 50
     
     # Updating the display
     pg.display.update()
