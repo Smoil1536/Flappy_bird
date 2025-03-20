@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+from playsound import playsound
 from src import bird
 from src import pipe
 
@@ -19,7 +20,7 @@ def load_images():
     
 def randomize_pipes():
     upY = pipe.calc_coords()
-    downY = (upY+pipe_height) + (bird_height*4)
+    downY = (upY+pipe_height) + (bird_height*5)
     return upY, downY
 
 def reset_pipes(Beam_flipped, Beam):
@@ -47,8 +48,13 @@ def show_pipes(flipped, straight):
     window.blit(pipe_image_flipped, (flipped.x, flipped.y))
     window.blit(pipe_image, (straight.x, straight.y))
     
+def play_audio(audio):
+    sound = pg.mixer.Sound(audio)
+    sound.play()
+    
 # Initializing window and pygame
 pg.init()
+pg.mixer.init()
 load_images()
 
 width = bg_image.get_size()[0]
@@ -110,6 +116,8 @@ while running:
     
     # Collison
     if crash((Beam_flipped, Beam_flipped_mask), (Beam_flipped_2, Beam_flipped_mask), (Beam, Beam_mask), (Beam_2, Beam_mask)):
+        playsound("assets/audio/hit.wav")
+        playsound("assets/audio/die.wav")
         running = False
     
     # Repeating the pipes by reseting it's position
@@ -123,9 +131,8 @@ while running:
         if event.type == pg.QUIT:
             running = False
         elif event.type == pg.MOUSEBUTTONDOWN:
-            print("yes clicked")
-            print(Flappy_bird.y)
-            Flappy_bird.y -= 50
+            play_audio("assets/audio/swoosh.ogg")
+            Flappy_bird.y -= 80
     
     # Updating the display
     pg.display.update()
