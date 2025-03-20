@@ -2,6 +2,7 @@ import pygame as pg
 from src import bird
 from src import pipe
 
+# Function to load assets
 def load_images():
     global game_icon, bg_image, bird_image_up, bird_image_down, bird_image_mid, pipe_image, pipe_image_flipped
     
@@ -36,8 +37,8 @@ pg.display.set_caption("Flappy Bird")
 
 # Initializing bird
 Flappy_bird = bird.Bird()
-Flappy_bird.x = (width/2) - (bird_width/2) # 17 is half of width of bird
-Flappy_bird.y = (height/2) - (bird_height/2) # 12 is half of height of bird
+Flappy_bird.x = (width/2) - (bird_width/2)
+Flappy_bird.y = (height/2) - (bird_height/2)
 
 # Init pipe
 Beam_flipped = pipe.Pipe()
